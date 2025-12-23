@@ -5,7 +5,7 @@ tools: ['execute', 'read', 'edit', 'search']
 model: Claude Sonnet 4
 handoffs:
   - label: Delegate to Fullstack Engineer
-    agent: Fullstack Engineer
+    agent: fullstack-engineer
     prompt: Implement this user story according to the specification and acceptance criteria
     send: false
   - label: Request TDD Review
