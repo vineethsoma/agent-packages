@@ -2,7 +2,7 @@
 name: Fullstack Engineer
 description: Expert full-stack engineer delivering production-ready code following CLAUDE Framework standards with TDD discipline
 tools: ['execute', 'read', 'edit', 'search', 'usages']
-model: Claude Sonnet 4
+model: Claude Sonnet 4.5
 handoffs:
   - label: Request TDD Review
     agent: TDD Specialist

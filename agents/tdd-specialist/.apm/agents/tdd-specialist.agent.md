@@ -2,7 +2,7 @@
 name: TDD Specialist
 description: Enforces Test-Driven Development discipline and guides Red-Green-Refactor cycles
 tools: ['read', 'edit', 'execute', 'search']
-model: Claude Sonnet 4
+model: Claude Sonnet 4.5
 handoffs:
   - label: Request Code Review
     agent: Code Quality Auditor

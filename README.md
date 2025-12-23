@@ -221,7 +221,7 @@ Agent files (`.agent.md`) MUST follow VS Code specification:
 name: Agent Name
 description: Brief one-line description
 tools: ['read', 'edit', 'execute', 'search', 'usages', 'fetch', 'githubRepo']
-model: Claude Sonnet 4
+model: Claude Sonnet 4.5
 handoffs:
   - label: Next Step
     agent: other-agent

@@ -2,7 +2,7 @@
 name: Feature Lead
 description: Feature development orchestrator coordinating multi-story features with spec validation, team coordination, and parallel workflows
 tools: ['execute', 'read', 'edit', 'search']
-model: Claude Sonnet 4
+model: Claude Sonnet 4.5
 handoffs:
   - label: Delegate to Fullstack Engineer
     agent: Fullstack Engineer

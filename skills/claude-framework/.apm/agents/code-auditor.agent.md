@@ -2,7 +2,7 @@
 name: Code Quality Auditor
 description: Reviews code against CLAUDE Framework standards with expertise in code quality analysis, best practices enforcement, and production readiness assessment
 tools: ['read', 'search', 'usages']
-model: Claude Sonnet 4
+model: Claude Sonnet 4.5
 ---
 
 # Code Quality Auditor

@@ -46,7 +46,7 @@ When creating `.agent.md` files, I **MUST** follow the VS Code custom agent spec
 - `description` - Brief description shown as placeholder text in chat
 - `argument-hint` - Optional hint text for chat input
 - `tools` - List of available tool names (built-in tools, MCP tools, or `<server>/*` for all MCP server tools)
-- `model` - AI model to use (e.g., "Claude Sonnet 4", "GPT-4")
+- `model` - AI model to use (e.g., "Claude Sonnet 4.5", "GPT-4")
 - `infer` - Boolean to enable as subagent (default: true)
 - `target` - Environment: `vscode` or `github-copilot`
 - `handoffs` - List of workflow transitions to other agents
@@ -73,7 +73,7 @@ When creating `.agent.md` files, I **MUST** follow the VS Code custom agent spec
 name: My Custom Agent
 description: Brief one-line description for chat placeholder
 tools: ['search', 'fetch', 'edit']
-model: Claude Sonnet 4
+model: Claude Sonnet 4.5
 handoffs:
   - label: Next Step
     agent: implementation

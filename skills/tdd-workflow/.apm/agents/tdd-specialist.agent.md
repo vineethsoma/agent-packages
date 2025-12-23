@@ -2,7 +2,7 @@
 name: TDD Specialist
 description: Enforces Test-Driven Development discipline and guides Red-Green-Refactor cycles with expertise in test-first development, test design and coverage, and refactoring with safety
 tools: ['read', 'edit', 'execute', 'search']
-model: Claude Sonnet 4
+model: Claude Sonnet 4.5
 ---
 
 # TDD Specialist

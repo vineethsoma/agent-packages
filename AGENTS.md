@@ -1322,7 +1322,7 @@ description: string           # Brief description (chat placeholder text)
 # Optional
 argument-hint: string         # Hint text for chat input
 tools: [string]              # List of tool/tool-set names
-model: string                # AI model name (e.g., "Claude Sonnet 4", "GPT-4")
+model: string                # AI model name (e.g., "Claude Sonnet 4.5", "GPT-4")
 infer: boolean               # Enable as subagent (default: true)
 target: string               # Environment: "vscode" or "github-copilot"
 mcp-servers: [object]        # MCP server configs (github-copilot only)
@@ -1530,7 +1530,7 @@ Write Tests (fail) → Implement (pass) → Refactor
 4. **Vague instructions** → AI won't know how to behave
 5. **No handoffs** → Users manually switch agents (friction)
 6. **Auto-send on every handoff** → Removes human control
-7. **Model aliases** → Use "Claude Sonnet 4", not "sonnet"
+7. **Model aliases** → Use "Claude Sonnet 4.5", not "sonnet"
 
 ### ✅ Success Patterns
 
@@ -1550,7 +1550,7 @@ Write Tests (fail) → Implement (pass) → Refactor
 name: Planner
 description: Generate implementation plans for features and refactoring
 tools: ['search', 'fetch', 'usages', 'githubRepo']
-model: Claude Sonnet 4
+model: Claude Sonnet 4.5
 handoffs:
   - label: Implement Plan
     agent: implementation
@@ -1587,7 +1587,7 @@ Include these sections:
 name: Implementation
 description: Implement features following TDD and best practices
 tools: ['read', 'edit', 'execute', 'search']
-model: Claude Sonnet 4
+model: Claude Sonnet 4.5
 handoffs:
   - label: Request Review
     agent: reviewer
@@ -1617,7 +1617,7 @@ You implement features with production quality.
 name: Reviewer
 description: Review code for quality, security, and best practices
 tools: ['read', 'search', 'usages']
-model: Claude Sonnet 4
+model: Claude Sonnet 4.5
 handoffs:
   - label: Fix Issues
     agent: implementation
