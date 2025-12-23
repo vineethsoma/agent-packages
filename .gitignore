@@ -1,0 +1,12 @@
+
+# APM dependencies
+apm_modules/
+
+
+# APM integrated prompts
+.github/prompts/*-apm.prompt.md
+
+
+# APM integrated agents
+.github/agents/*-apm.agent.md
+.github/agents/*-apm.chatmode.md

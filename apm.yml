@@ -1,0 +1,10 @@
+name: agent-packages
+version: 1.0.0
+description: Collection of reusable agent packages for AI-native development
+author: Vineeth Soma
+dependencies:
+  apm:
+    # Use our own package manager to help manage these packages
+    - vineethsoma/agent-packages/agents/package-manager
+  mcp: []
+scripts: {}
