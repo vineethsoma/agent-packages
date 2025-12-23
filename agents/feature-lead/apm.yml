@@ -1,0 +1,12 @@
+name: feature-lead
+version: 1.0.0
+description: Feature development orchestrator coordinating multiple fullstack engineers
+author: Vineeth Soma
+type: agent
+
+dependencies:
+  apm:
+    - vineethsoma/agent-packages/skills/spec-driven-development
+    - vineethsoma/agent-packages/skills/feature-orchestration
+    - vineethsoma/agent-packages/skills/git-worktree-workflow
+    - vineethsoma/agent-packages/skills/task-delegation
