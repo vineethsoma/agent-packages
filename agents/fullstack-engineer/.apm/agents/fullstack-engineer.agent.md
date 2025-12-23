@@ -3,7 +3,7 @@ name: fullstack-engineer
 description: Expert full-stack engineer delivering production-ready code following CLAUDE Framework standards, TDD development, comprehensive error handling, security best practices, and maintainable architecture.
 author: Vineeth Soma
 version: "2.0.0"
-tools: ["terminal", "file-manager", "browser", "git"]
+tools: ['vscode/openSimpleBrowser', 'vscode/runCommand', 'execute', 'read', 'edit', 'search', 'todo']
 expertise: ["backend", "frontend", "database", "devops", "testing", "security", "performance"]
 model: sonnet
 color: blue
