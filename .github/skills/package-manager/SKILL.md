@@ -3,7 +3,7 @@ description: Specialized agent for creating, updating, and managing APM agent pa
   with proper structure and validation
 metadata:
   apm_commit: unknown
-  apm_installed_at: '2025-12-23T16:33:02.070455'
+  apm_installed_at: '2025-12-23T17:02:02.320975'
   apm_package: vineethsoma/agent-packages/agents/package-manager
   apm_version: 1.0.0
 name: agent-package-manager
@@ -19,7 +19,9 @@ Expert agent for managing the lifecycle of APM agent packages, ensuring proper s
 
 The Agent Package Manager specializes in:
 - Creating new agent packages with proper APM structure
+- Creating Agent Skills following agentskills.io specification
 - Validating package structure and content
+- Validating Agent Skills compliance (SKILL.md frontmatter)
 - Populating `.apm/` directories with primitives
 - Managing cross-cutting concerns (instructions, contexts, memory)
 - Ensuring packages pass APM validation
@@ -87,6 +89,60 @@ This agent knows:
 - Integration patterns for VSCode and Claude
 - Git workflow for package development
 
+## Validation Scripts
+
+This skill includes automated validation scripts in the [`scripts/`](scripts/) directory:
+
+### Agent Compliance Validation
+[`scripts/validate-agent-compliance.sh`](scripts/validate-agent-compliance.sh) - Validates custom agent files against VS Code specification
+
+**Usage**: `./scripts/validate-agent-compliance.sh [path/to/.github/agents]`
+
+**Checks for**:
+- Unsupported YAML attributes (expertise, boundaries, author, version, color, skills, apm)
+- Model aliases (sonnet, gpt4)
+- YAML frontmatter structure
+- Generates detailed compliance report
+
+### Package Structure Validation
+[`scripts/validate-package-structure.sh`](scripts/validate-package-structure.sh) - Validates APM package directory structure
+
+**Usage**: `./scripts/validate-package-structure.sh [package-path]`
+
+**Checks for**:
+- SKILL.md and apm.yml at root
+- .apm/ directory with subdirectories
+- Content in .apm/ subdirectories (prevents empty directory failures)
+- Primitive file conventions
+- Agent file compliance
+
+### Workspace Agent Scanner
+[`scripts/scan-workspace-agents.py`](scripts/scan-workspace-agents.py) - Comprehensive workspace scanning for all custom agents
+
+**Usage**: `python3 scripts/scan-workspace-agents.py [workspace-path]`
+
+**Features**:
+- Recursively finds all .agent.md files
+- Analyzes YAML frontmatter with line numbers
+- Generates detailed markdown report
+### Agent Skill Validator
+[`scripts/validate-agent-skill.py`](scripts/validate-agent-skill.py) - Validates Agent Skills against official specification
+
+**Usage**: `python3 scripts/validate-agent-skill.py [skill-directory]`
+
+**Checks for**:
+- SKILL.md frontmatter validity (name, description fields)
+- Name compliance (lowercase, hyphens, 1-64 chars)
+- Name matches directory
+- Description length (1-1024 chars)
+- Optional field validation (compatibility, metadata)
+- Directory structure (scripts/, references/, assets/)
+- Generates detailed validation report
+
+- No external dependencies (Python stdlib only)
+
+See [`scripts/README.md`](scripts/README.md) for complete documentation.
+
 ## How It Works
 
-The agent follows a systematic approach to package management, ensuring every package is properly structured and validated before use.
+The agent follows a systematic approach to package management, ensuring every package is properly structured and validated before use. It leverages the validation scripts above to automate compliance checks.
