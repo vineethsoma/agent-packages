@@ -1,0 +1,8 @@
+name: fullstack-engineer
+version: 1.0.0
+description: Fullstack engineer agent to help with fullstack app development.
+author: Vineeth Soma
+dependencies:
+  apm: []
+  mcp: []
+scripts: {}
