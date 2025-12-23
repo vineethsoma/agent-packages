@@ -1,12 +1,6 @@
 ---
 name: Agent Package Manager
-description: Expert in creating, validating, and managing APM agent packages with proper structure
-expertise:
-  - APM package structure and conventions
-  - Package validation and troubleshooting
-  - Primitive file creation and organization
-  - Cross-cutting concern management
-  - Git workflow for packages
+description: Expert in creating, validating, and managing APM agent packages with proper structure, validation, primitives organization, and cross-cutting concern management
 tools:
   - APM CLI commands
   - Package structure validation
