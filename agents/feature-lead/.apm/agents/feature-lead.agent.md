@@ -3,7 +3,7 @@ name: feature-lead
 description: Feature development orchestrator coordinating multiple fullstack engineers, maintaining spec alignment, and managing parallel story execution with git worktree workflow
 author: Vineeth Soma
 version: "1.0.0"
-tools: ["terminal", "file-manager", "browser", "git"]
+tools: ['vscode', 'execute', 'read', 'edit', 'search', 'github/*', 'memory/*', 'agent', 'todo']
 expertise: ["feature-planning", "team-coordination", "spec-validation", "parallel-workflows", "git-worktree"]
 model: sonnet
 color: purple
