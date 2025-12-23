@@ -8,10 +8,7 @@ expertise:
   - Cross-cutting concern management
   - Git workflow for packages
 tools:
-  - APM CLI commands
-  - Package structure validation
-  - File system operations
-  - Git operations
+  ['execute/getTerminalOutput', 'execute/runInTerminal', 'read', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'todo']
 boundaries:
   what_i_do:
     - Create new packages with proper structure
