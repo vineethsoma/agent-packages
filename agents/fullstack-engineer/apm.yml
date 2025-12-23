@@ -1,8 +1,12 @@
 name: fullstack-engineer
-version: 1.0.0
-description: Fullstack engineer agent to help with fullstack app development.
+version: 2.0.0
+description: Expert full-stack engineer delivering production-ready code with TDD, CLAUDE Framework standards, and comprehensive refactoring patterns.
 author: Vineeth Soma
 dependencies:
-  apm: []
+  apm:
+    - vineethsoma/agent-packages/skills/claude-framework
+    - vineethsoma/agent-packages/skills/tdd-workflow
+    - vineethsoma/agent-packages/skills/refactoring-patterns
+    - vineethsoma/agent-packages/skills/fullstack-expertise
   mcp: []
 scripts: {}
