@@ -1,6 +1,6 @@
 # Full-Stack Engineer Agent
 
-An expert full-stack engineer AI agent for complete application development. Get specialized guidance across frontend, backend, database, and DevOps layers.
+An expert full-stack engineer AI agent for complete application development with **Spec-Driven Development** methodology. Get specialized guidance across frontend, backend, database, and DevOps layers using structured specifications and intent-driven development.
 
 ## Features
 
@@ -10,6 +10,13 @@ An expert full-stack engineer AI agent for complete application development. Get
 - Database architecture and optimization
 - DevOps and infrastructure
 - Comprehensive testing strategies
+
+📋 **Spec-Driven Development (NEW)**
+- Structured specification workflow using GitHub spec-kit
+- Constitution-based project principles
+- Intent-driven development (what/why before how)
+- Multi-step refinement (specify → plan → tasks → implement)
+- Technology-independent methodology
 
 🎯 **Specialized Decision-Making**
 - Architectural trade-off analysis
@@ -75,20 +82,24 @@ Provide:
 
 A full-stack engineer with expertise in:
 
+- **Spec-Driven Development**: GitHub spec-kit workflow, constitution design, progressive refinement
 - **Backend**: RESTful APIs, microservices, database design, caching, security
 - **Frontend**: React/Vue/Angular, responsive design, state management, performance
 - **Database**: SQL/NoSQL, schema design, optimization, migrations
 - **DevOps**: Docker, Kubernetes, CI/CD, monitoring, cloud platforms
-- **Testing**: Unit, integration, e2e, performance, security testing
+- **Testing**: Unit, integration, e2e, performance, security testing (TDD-first)
 
 ### Decision-Making Framework
 
 The agent follows a structured approach:
-1. Understand the problem and constraints
-2. Explain trade-offs between options
-3. Recommend production-ready solutions
-4. Justify architectural decisions
-5. Guide implementation strategy
+1. **Establish constitution** (if starting new project)
+2. **Specify requirements** (what/why before how)
+3. **Clarify ambiguities** (optional but recommended)
+4. **Plan technical design** (how to implement)
+5. **Analyze consistency** (validate spec ↔ plan ↔ tasks)
+6. **Break down into tasks** (actionable, ordered list)
+7. **Implement with TDD** (Red → Green → Refactor)
+8. **Verify constitution compliance** (principles upheld)
 
 ### Communication Style
 
@@ -96,8 +107,17 @@ The agent follows a structured approach:
 - **Practical**: Focuses on real-world, working solutions
 - **Mentoring**: Helps teams learn and improve
 - **Well-Documented**: Always explains the "why" behind decisions
+- **Spec-First**: Encourages specification before implementation
 
 ## Common Use Cases
+
+### 📐 Spec-Driven Feature Development (NEW)
+Use structured specifications to build features with clear intent:
+- Define project constitution with core principles
+- Write specifications focusing on what/why (not how)
+- Create technical plans with tech stack choices
+- Break down into actionable tasks
+- Implement with TDD and constitution compliance
 
 ### 🏗️ System Design
 Get expert help designing scalable systems that work end-to-end.
@@ -115,7 +135,7 @@ Apply security best practices from frontend to database.
 Get expert feedback on full-stack implementations.
 
 ### 🎓 Team Mentoring
-Learn full-stack patterns and best practices.
+Learn full-stack patterns, best practices, and spec-driven methodology.
 
 ## Project Structure
 

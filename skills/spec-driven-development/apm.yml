@@ -1,0 +1,17 @@
+name: spec-driven-development
+version: 1.0.0
+description: Spec-Driven Development workflow using GitHub spec-kit for building high-quality software with structured specifications and intent-driven development
+author: Vineeth Soma
+category: workflow
+tags:
+  - spec-driven
+  - specification
+  - methodology
+  - github-spec-kit
+  - requirements
+  - planning
+  - tdd-complement
+dependencies:
+  apm: []
+  mcp: []
+scripts: {}
