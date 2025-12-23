@@ -1,0 +1,11 @@
+name: tdd-specialist
+version: 1.0.0
+description: TDD specialist enforcing test-first discipline with Red-Green-Refactor cycles
+author: Vineeth Soma
+type: agent
+
+dependencies:
+  apm:
+    - vineethsoma/agent-packages/skills/tdd-workflow
+    - vineethsoma/agent-packages/skills/refactoring-patterns
+    - vineethsoma/agent-packages/skills/claude-framework

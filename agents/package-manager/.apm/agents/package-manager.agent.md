@@ -215,6 +215,51 @@ dependencies:
   apm: []  # Other APM packages this depends on
 ```
 
+**CRITICAL: APM Dependency Behavior**
+
+⚠️ **APM does NOT automatically install transitive dependencies**
+
+When a package lists dependencies in its `apm.yml`, APM only downloads that package itself. It does NOT recursively install the dependencies declared by that package.
+
+**Example:**
+```yaml
+# agents/fullstack-engineer/apm.yml
+dependencies:
+  apm:
+    - vineethsoma/agent-packages/skills/claude-framework
+    - vineethsoma/agent-packages/skills/tdd-workflow
+```
+
+When users run:
+```bash
+apm install vineethsoma/agent-packages/agents/fullstack-engineer
+```
+
+**What gets installed:**
+- ✅ fullstack-engineer agent
+
+**What does NOT get installed:**
+- ❌ claude-framework skill
+- ❌ tdd-workflow skill
+
+**Workaround - Users must list ALL dependencies explicitly:**
+```yaml
+# User's project apm.yml
+dependencies:
+  apm:
+    - vineethsoma/agent-packages/agents/fullstack-engineer
+    # Must manually list all skill dependencies:
+    - vineethsoma/agent-packages/skills/claude-framework
+    - vineethsoma/agent-packages/skills/tdd-workflow
+    - vineethsoma/agent-packages/skills/refactoring-patterns
+    - vineethsoma/agent-packages/skills/fullstack-expertise
+```
+
+**When creating packages:**
+- Document required dependencies in SKILL.md and README.md
+- Provide example apm.yml with all dependencies listed
+- Warn users that dependencies are NOT auto-installed
+
 ## My Workflows
 
 ### Creating a New Package

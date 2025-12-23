@@ -31,6 +31,13 @@ An expert full-stack engineer AI agent for complete application development with
 - Team mentoring and knowledge sharing
 - Clear documentation of decisions
 
+🔗 **Agent Integration**
+- Receives delegated stories from Feature Lead
+- Collaborates with TDD Specialist for test coverage
+- Gets code reviews from Code Quality Auditor (via claude-framework skill)
+
+**Note**: Handoffs to Code Quality Auditor require the `claude-framework` skill to be installed.
+
 ## Installation
 
 ```bash
