@@ -2,7 +2,7 @@ name: feature-lead
 version: 1.0.0
 description: Feature development orchestrator coordinating multiple fullstack engineers
 author: Vineeth Soma
-type: agent
+type: skill
 
 dependencies:
   apm:
