@@ -7,15 +7,15 @@ handoffs:
   - label: Request TDD Review
     agent: tdd-specialist
     prompt: Review test coverage and TDD compliance for this implementation
-    send: false
+    send: true
   - label: Report Completion to Feature Lead
     agent: feature-lead
     prompt: Story complete. Ready for review and merge approval
-    send: false
+    send: true
   - label: Request Code Quality Review
     agent: code-quality-auditor
     prompt: Review code against CLAUDE Framework standards
-    send: false
+    send: true
 ---
 
 # Full-Stack Engineer
