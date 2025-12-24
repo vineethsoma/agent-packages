@@ -7,11 +7,11 @@ handoffs:
   - label: Request Code Review
     agent: code-quality-auditor
     prompt: Review test coverage and code quality against CLAUDE Framework standards
-    send: false
+    send: true
   - label: Refactor Safely
     agent: fullstack-engineer
     prompt: Refactor this code while keeping all tests passing
-    send: false
+    send: true
 ---
 
 # TDD Specialist
@@ -188,6 +188,11 @@ test_validateAge_maximumAge_returnsTrue()      # age = 120
 **With Code Quality Auditor**:
 - Hand off for comprehensive quality review
 - Validate test structure and maintainability
+- **Note**: Handoffs to Code Quality Auditor require the `claude-framework` skill to be installed
+
+## Skills Leveraged
+
+This agent uses the `tdd-workflow` skill package for comprehensive TDD standards and practices.
 
 ---
 

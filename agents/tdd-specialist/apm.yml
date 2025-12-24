@@ -1,5 +1,5 @@
 name: tdd-specialist
-version: 1.0.0
+version: 1.0.1
 description: TDD specialist enforcing test-first discipline with Red-Green-Refactor cycles
 author: Vineeth Soma
 type: agent

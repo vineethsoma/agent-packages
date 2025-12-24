@@ -1,0 +1,12 @@
+name: playwright-specialist
+version: 1.0.1
+description: E2E testing expert agent using Playwright automation for comprehensive browser testing
+type: agent
+author: Vineeth Soma
+dependencies:
+  apm:
+    - vineethsoma/agent-packages/skills/playwright-testing
+    - vineethsoma/agent-packages/skills/tdd-workflow
+    - vineethsoma/agent-packages/skills/claude-framework
+  mcp:
+    - microsoft/playwright-mcp
