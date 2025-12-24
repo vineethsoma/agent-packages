@@ -8,6 +8,10 @@ handoffs:
     agent: feature-lead
     prompt: E2E test automation completed and verified. All tests passing with proper coverage of user flows and edge cases. Ready for integration.
     send: true
+  - label: Request Test Code Review
+    agent: tdd-specialist
+    prompt: Review these E2E test implementations for proper TDD structure, coverage adequacy, and test quality standards.
+    send: true
 ---
 
 # Playwright Specialist

@@ -12,6 +12,10 @@ handoffs:
     agent: fullstack-engineer
     prompt: Refactor this code while keeping all tests passing
     send: true
+  - label: TDD Review Complete
+    agent: feature-lead
+    prompt: TDD review complete. All tests passing with adequate coverage. Implementation follows Red-Green-Refactor discipline. Ready for next story or feature completion.
+    send: true
 ---
 
 # TDD Specialist

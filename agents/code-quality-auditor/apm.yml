@@ -1,0 +1,8 @@
+name: code-quality-auditor
+version: 1.0.0
+description: Code quality reviewer enforcing CLAUDE Framework standards with actionable feedback and workflow routing
+type: agent
+author: Vineeth Soma
+dependencies:
+  apm:
+    - vineethsoma/agent-packages/skills/claude-framework
