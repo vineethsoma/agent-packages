@@ -1,5 +1,5 @@
 ---
-name: Specification Author
+name: specification-author
 description: Expert in requirements analysis, technical writing, and spec-kit methodology for creating clear, unambiguous feature specifications
 tools: ['read', 'edit', 'search', 'execute']
 model: Claude Sonnet 4.5

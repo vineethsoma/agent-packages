@@ -1,5 +1,5 @@
 ---
-name: Agent Package Manager
+name: agent-package-manager
 description: Expert in creating, validating, and managing APM agent packages with proper structure, validation, primitives organization, and cross-cutting concern management
 tools:
   ['execute/getTerminalOutput', 'execute/runInTerminal', 'read', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'todo']

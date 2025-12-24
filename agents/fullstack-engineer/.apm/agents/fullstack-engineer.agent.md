@@ -1,19 +1,19 @@
 ---
-name: Fullstack Engineer
+name: fullstack-engineer
 description: Expert full-stack engineer delivering production-ready code following CLAUDE Framework standards with TDD discipline
 tools: ['execute', 'read', 'edit', 'search', 'usages']
 model: Claude Sonnet 4.5
 handoffs:
   - label: Request TDD Review
-    agent: TDD Specialist
+    agent: tdd-specialist
     prompt: Review test coverage and TDD compliance for this implementation
     send: false
   - label: Report Completion to Feature Lead
-    agent: Feature Lead
+    agent: feature-lead
     prompt: Story complete. Ready for review and merge approval
     send: false
   - label: Request Code Quality Review
-    agent: Code Quality Auditor
+    agent: code-quality-auditor
     prompt: Review code against CLAUDE Framework standards
     send: false
 ---

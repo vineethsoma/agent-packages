@@ -1,15 +1,15 @@
 ---
-name: TDD Specialist
+name: tdd-specialist
 description: Enforces Test-Driven Development discipline and guides Red-Green-Refactor cycles
 tools: ['read', 'edit', 'execute', 'search']
 model: Claude Sonnet 4.5
 handoffs:
   - label: Request Code Review
-    agent: Code Quality Auditor
+    agent: code-quality-auditor
     prompt: Review test coverage and code quality against CLAUDE Framework standards
     send: false
   - label: Refactor Safely
-    agent: Fullstack Engineer
+    agent: fullstack-engineer
     prompt: Refactor this code while keeping all tests passing
     send: false
 ---
