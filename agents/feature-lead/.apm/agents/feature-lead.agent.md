@@ -2,7 +2,7 @@
 name: feature-lead
 description: Feature development orchestrator coordinating multi-story features with spec validation, team coordination, and parallel workflows
 tools: ['execute', 'read', 'edit', 'search', 'agent']
-model: Claude Sonnet 4.5
+model: Claude Opus 4.5 (copilot)
 handoffs:
   - label: Delegate to Fullstack Engineer
     agent: fullstack-engineer
