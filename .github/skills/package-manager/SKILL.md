@@ -3,9 +3,9 @@ description: Specialized agent for creating, updating, and managing APM agent pa
   with proper structure and validation
 metadata:
   apm_commit: unknown
-  apm_installed_at: '2025-12-24T16:27:13.756728'
+  apm_installed_at: '2025-12-24T16:31:05.604277'
   apm_package: vineethsoma/agent-packages/agents/package-manager
-  apm_version: 1.0.1
+  apm_version: 1.0.2
 name: agent-package-manager
 type: agent
 version: 1.0.0
