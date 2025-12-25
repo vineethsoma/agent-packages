@@ -696,7 +696,7 @@ When receiving handoff from Retro Specialist after story retrospective:
 ### 2. Version Management (CRITICAL)
 - **MANDATORY**: Bump version in `apm.yml` for affected packages
 - Any primitive change requires version bump (PATCH/MINOR/MAJOR)
-- Without version bump, `apm deps update` won't detect changes
+- Without version bump, `apm install --update` won't detect changes
 - Follow semantic versioning guidelines
 
 ### 3. Commit and Push
@@ -712,7 +712,7 @@ git push origin main
 Identify projects using updated primitives (e.g., birdmate):
 ```bash
 cd /path/to/birdmate
-apm deps update  # Detects version change, updates integrated files
+apm install --update  # Detects version changes, updates all integrated files
 ```
 
 Verify updated primitives integrated to `.github/` or `.claude/` directories:
@@ -776,7 +776,7 @@ apm install /absolute/path/to/package
 apm install github.com/owner/repo/category/name
 
 # Update dependencies in dependent projects
-apm deps update
+apm install --update
 
 # List dependencies
 apm deps list

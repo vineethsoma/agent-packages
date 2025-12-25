@@ -1,5 +1,5 @@
 name: agent-package-manager
-version: 1.1.0
+version: 1.1.1
 description: Agent for creating and managing APM agent packages with kebab-case naming enforcement
 type: hybrid
 author: Vineeth Soma
