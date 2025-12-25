@@ -1,0 +1,7 @@
+name: secure-development
+version: 1.0.0
+description: Security best practices for production applications
+type: skill
+author: vineethsoma
+dependencies:
+  apm: []

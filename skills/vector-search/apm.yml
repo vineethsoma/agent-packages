@@ -1,0 +1,7 @@
+name: vector-search
+version: 1.0.0
+description: Semantic search using vector embeddings and similarity metrics
+type: skill
+author: vineethsoma
+dependencies:
+  apm: []
