@@ -31,17 +31,37 @@ Agent handoff state diagrams documenting how agents coordinate during feature de
                                    │                           │
                                    └───────────────────────────┘
                                      (Routes to: Fullstack, Feature Lead, TDD)
+
+═══════════════════════════════════════════════════════════════════════════════════
+                              POST-MERGE WORKFLOW
+═══════════════════════════════════════════════════════════════════════════════════
+
+┌──────────────────┐      ┌───────────────────┐      ┌─────────────────────────┐
+│   FEATURE LEAD   │─────►│ RETRO SPECIALIST  │─────►│ AGENT PACKAGE MANAGER   │
+│ (Story Merged)   │      │  (Facilitates)    │      │ (Implements Changes)    │
+└──────────────────┘      └─────────┬─────────┘      └─────────────────────────┘
+                                    │
+                          ┌─────────┴─────────┐
+                          │ Gathers Input From│
+                          ├───────────────────┤
+                          │ • TDD Specialist  │
+                          │ • Fullstack Eng   │
+                          │ • Playwright Spec │
+                          │ • Code Quality    │
+                          └───────────────────┘
 ```
 
 ## Agents Overview
 
-| Agent | Role | Model |
-|-------|------|-------|
-| **feature-lead** | Orchestrator - coordinates multi-story features | Claude Opus 4.5 |
-| **fullstack-engineer** | Implementation - builds production-ready code | Claude Sonnet 4.5 |
-| **tdd-specialist** | Quality - enforces TDD discipline | Claude Sonnet 4.5 |
-| **playwright-specialist** | E2E Testing - browser automation | Claude Sonnet 4.5 |
-| **code-quality-auditor** | Review - CLAUDE Framework compliance | Claude Sonnet 4.5 |
+| Agent | Role | Phase | Model |
+|-------|------|-------|-------|
+| **feature-lead** | Orchestrator - coordinates multi-story features | Development | Claude Opus 4.5 |
+| **fullstack-engineer** | Implementation - builds production-ready code | Development | Claude Sonnet 4.5 |
+| **tdd-specialist** | Quality - enforces TDD discipline | Development | Claude Sonnet 4.5 |
+| **playwright-specialist** | E2E Testing - browser automation | Integration | Claude Sonnet 4.5 |
+| **code-quality-auditor** | Review - CLAUDE Framework compliance | Quality Gate | Claude Sonnet 4.5 |
+| **retro-specialist** | Facilitation - runs retrospectives, synthesizes learnings | Post-Merge | Claude Sonnet 4.5 |
+| **agent-package-manager** | Maintenance - implements process improvements | Continuous | Claude Sonnet 4.5 |
 
 ## Handoff Table
 
@@ -61,6 +81,9 @@ Agent handoff state diagrams documenting how agents coordinate during feature de
 | **code-quality-auditor** | fullstack-engineer | "Rework Required" | ✅ | Fix identified issues |
 | **code-quality-auditor** | feature-lead | "Review Approved" | ✅ | Quality gate passed |
 | **code-quality-auditor** | tdd-specialist | "Request TDD Validation" | ✅ | Validate test coverage |
+| **feature-lead** | retro-specialist | "Run Story Retrospective" | ✅ | Facilitate retro after merge |
+| **retro-specialist** | agent-package-manager | "Implement Process Improvements" | ✅ | Update skills/agents/templates |
+| **retro-specialist** | feature-lead | "Retro Complete" | ✅ | Return to orchestrator |
 
 > **Note**: All handoffs are autonomous (`send: true`) - no manual approval required.
 
@@ -124,6 +147,33 @@ Iterative loop for code improvement:
 2. Fullstack Engineer refactors while keeping tests passing
 3. TDD Specialist validates tests still pass
 4. TDD Specialist requests final code review
+
+### Path 4: Retrospective and Continuous Improvement
+
+Post-merge learning cycle:
+
+```
+┌──────────────┐     ┌──────────────────┐     ┌─────────────────────────┐
+│ Feature Lead │────►│ Retro Specialist │────►│ Agent Package Manager   │
+└──────────────┘     └────────┬─────────┘     └─────────────────────────┘
+    (Merged)                  │                   (Implements Changes)
+                              │
+                    ┌─────────┴─────────┐
+                    │  Gathers Input:   │
+                    │  • TDD Specialist │
+                    │  • Fullstack Eng  │
+                    │  • Playwright     │
+                    │  • Code Quality   │
+                    └───────────────────┘
+```
+
+**Steps**:
+1. Feature Lead triggers retro after story merge
+2. Retro Specialist gathers structured YAML input from all contributors
+3. Retro Specialist synthesizes successes and improvements
+4. Retro Specialist creates handoff spec for Agent Package Manager
+5. Agent Package Manager implements changes (skills, agents, templates)
+6. Agent Package Manager updates `.memory/retro-log.md` and bumps versions
 
 ## State Diagram (Mermaid)
 
@@ -199,11 +249,49 @@ sequenceDiagram
     FL->>FL: Feature complete
 ```
 
+## Development Standards
+
+### TDD Commit Convention
+
+All commits during implementation use emoji prefixes for cycle visibility:
+
+```bash
+🔴 RED: "test for similarity edge cases"
+🟢 GREEN: "implement similarity clamping"
+♻️ REFACTOR: "extract normalization helper"
+```
+
+This provides an auditable trail of TDD discipline in git history.
+
+### Quality Gate Timing
+
+| Gate | When | Required | Tools/Templates |
+|------|------|----------|------------------|
+| **Component Mini-Audit** | After each component | < 2 issues | CLAUDE spot-check |
+| **TDD Compliance** | During implementation | 0 violations | `tdd-compliance.checklist.md` |
+| **Full CLAUDE Audit** | Before merge | Grade C+ (21/30) | `claude-audit.checklist.md` |
+| **E2E Tests** | Integration complete | 100% passing | `e2e-test-plan.checklist.md` |
+| **All Tests Green** | Before merge | BLOCKING | Backend + Frontend + E2E |
+
+**Critical**: E2E tests MUST pass to merge. No exceptions.
+
+### Artifact Templates
+
+Story development uses standardized templates from `.specify/templates/`:
+
+- `story-tracker.template.md` - Progress tracking (Feature Lead)
+- `tdd-compliance.checklist.md` - TDD verification (TDD Specialist)
+- `delegation-brief.template.md` - Task handoff with domain context (Feature Lead)
+- `claude-audit.checklist.md` - CLAUDE Framework review (Code Quality Auditor)
+- `e2e-test-plan.checklist.md` - E2E testing (Playwright Specialist)
+- `retro-process.md` - Retrospective workflow (Retro Specialist)
+
 ## Key Observations
 
 ### Hub-and-Spoke Model
 - **Feature Lead is the central hub** - receives completion reports from all paths
 - All work eventually returns to Feature Lead for coordination
+- **Post-merge**: Retro Specialist becomes temporary hub for learning capture
 
 ### Quality Gates
 - **TDD Specialist** is central to quality - both Fullstack Engineer and Feature Lead can request reviews
@@ -224,7 +312,16 @@ sequenceDiagram
   - Fullstack Engineer (rework needed)
   - Feature Lead (review approved)
   - TDD Specialist (validate test coverage)
+- **Retro Specialist** routes to:
+  - Agent Package Manager (implement improvements)
+  - Feature Lead (retro complete)
 - All agents have paths back to the orchestrator
+
+### Continuous Improvement Loop
+- **Retro Specialist** captures learnings after every story
+- **Agent Package Manager** implements process improvements
+- Learnings flow back into skills, agents, and templates
+- Team velocity improves with each iteration
 
 ## Agent Dependencies
 
@@ -236,7 +333,9 @@ feature-lead
 │   └── code-quality-auditor
 ├── tdd-specialist
 │   └── code-quality-auditor
-└── playwright-specialist
+├── playwright-specialist
+└── retro-specialist (post-merge)
+    └── agent-package-manager
 ```
 
 ## Usage
@@ -261,3 +360,19 @@ Feature Lead will:
 ```
 @tdd-specialist Review test coverage for the user service module
 ```
+
+### Running Retrospective
+```
+@retro-specialist Run retrospective for US-001 Bird Search feature
+```
+
+Retro Specialist will:
+1. Gather structured input from all contributors
+2. Synthesize successes and improvements
+3. Create handoff spec for Agent Package Manager
+4. Facilitate continuous improvement
+
+---
+
+**Last Updated**: 2025-12-25  
+**Version**: 2.0 - Added retrospective workflow and quality gates
