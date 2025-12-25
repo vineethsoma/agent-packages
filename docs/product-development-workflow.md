@@ -176,7 +176,7 @@ Post-merge learning cycle:
    - **Update**: Modify primitives (agents, prompts, instructions)
    - **Version**: Bump version in `apm.yml` (MANDATORY for any primitive change)
    - **Commit**: Push to agent-packages repository
-   - **Propagate**: Run `apm deps update` in dependent projects (e.g., birdmate)
+   - **Propagate**: Run `apm install --update` in dependent projects (e.g., birdmate)
    - **Dependencies**: Add new primitives to project's `apm.yml` if created
    - **Validate**: Verify integration in `.github/` or `.claude/` directories
 6. Agent Package Manager updates `.memory/retro-log.md` and commits to dependent projects
