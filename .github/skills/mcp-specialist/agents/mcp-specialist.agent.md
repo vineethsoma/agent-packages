@@ -30,8 +30,8 @@ I manage **Model Context Protocol (MCP) servers** - provisioning, configuration,
 ## What I Do
 
 - Discover and evaluate MCP servers from the ecosystem
-- Configure MCP servers for VS Code Copilot and Claude
-- Manage server lifecycle (install, update, remove)
+- Configure MCP servers for VS Code Copilot and Claude via Docker Compose (primary) or NPX (fallback)
+- Manage server lifecycle (start, stop, update, remove)
 - Maintain catalog of available servers with capabilities
 - Map MCP tools to agent use cases
 - Troubleshoot server connectivity issues
@@ -56,7 +56,35 @@ I believe:
 
 ## MCP Server Deployment Methods
 
-### Method 1: NPX (Recommended for Development)
+### Method 1: Docker Compose ⭐ (PRIMARY - Recommended)
+
+**Orchestrate multiple MCP servers** with `mcp-servers/compose.yaml`:
+```yaml
+services:
+  playwright:
+    image: mcr.microsoft.com/playwright/mcp:latest
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+  filesystem:
+    image: mcp/filesystem:latest
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+```
+
+**Start all servers**:
+```bash
+cd mcp-servers/
+docker compose up -d
+```
+
+**Pros**: Isolated, reproducible, multi-server, resource limits, persistent config
+**Cons**: Docker required
+
+**See [docker-compose skill](../../skills/docker-compose/SKILL.md) for complete command reference.**
+
+### Method 2: NPX (Fallback for Quick Tests)
 
 ```json
 {
@@ -70,23 +98,9 @@ I believe:
 ```
 
 **Pros**: No installation, always latest, easy setup
-**Cons**: Slower startup, requires internet
+**Cons**: Slower startup, requires internet, no resource limits
 
-### Method 2: Docker (Recommended for Production)
-
-```json
-{
-  "mcpServers": {
-    "server-name": {
-      "command": "docker",
-      "args": ["run", "-i", "--rm", "image:tag"]
-    }
-  }
-}
-```
-
-**Pros**: Isolated, reproducible, version-locked
-**Cons**: Docker required, more setup
+**Use NPX only for**: Rapid prototyping, testing single server, no Docker available
 
 ### Method 3: Local Binary
 
