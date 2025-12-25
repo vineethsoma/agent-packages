@@ -1,0 +1,7 @@
+name: docker-compose
+version: 1.0.0
+description: Docker Compose orchestration for MCP servers and multi-container applications
+author: vineethsoma
+type: skill
+dependencies:
+  apm: []

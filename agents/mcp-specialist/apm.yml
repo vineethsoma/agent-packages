@@ -1,7 +1,8 @@
 name: mcp-specialist
-version: 1.0.2
+version: 1.0.3
 description: MCP server lifecycle management, catalog maintenance, and agent tool provisioning
 type: hybrid
 author: Vineeth Soma
 dependencies:
-  apm: []
+  apm:
+    - vineethsoma/agent-packages/skills/docker-compose

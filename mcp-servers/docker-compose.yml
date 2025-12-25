@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  playwright-mcp:
+    # Use official Microsoft Playwright MCP image
+    image: mcr.microsoft.com/playwright/mcp:latest
+    container_name: playwright-mcp-server
+    # MCP uses stdin/stdout, run in interactive mode
+    stdin_open: true
+    tty: true
+    # Restart policy
+    restart: unless-stopped
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+    # Volumes for caching and persistent data
+    volumes:
+      - playwright-cache:/root/.cache/ms-playwright
+    # Network mode (bridge is default)
+    networks:
+      - mcp-network
+
+volumes:
+  playwright-cache:
+    driver: local
+
+networks:
+  mcp-network:
+    driver: bridge
