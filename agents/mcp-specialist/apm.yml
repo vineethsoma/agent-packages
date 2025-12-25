@@ -1,7 +1,7 @@
 name: mcp-specialist
-version: 1.0.0
+version: 1.0.1
 description: MCP server lifecycle management, catalog maintenance, and agent tool provisioning
-type: agent
+type: hybrid
 author: Vineeth Soma
 dependencies:
   apm: []

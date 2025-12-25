@@ -1,7 +1,7 @@
 name: playwright-specialist
-version: 1.0.2
+version: 1.0.3
 description: E2E testing expert agent using Playwright automation for comprehensive browser testing
-type: agent
+type: hybrid
 author: Vineeth Soma
 dependencies:
   apm:
