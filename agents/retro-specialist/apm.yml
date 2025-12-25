@@ -1,0 +1,7 @@
+name: retro-specialist
+version: 1.0.0
+description: Facilitates post-story retrospectives and creates structured handoff specs for continuous improvement
+type: hybrid
+author: Vineeth Soma
+dependencies:
+  apm: []
