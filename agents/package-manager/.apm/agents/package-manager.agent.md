@@ -3,6 +3,15 @@ name: agent-package-manager
 description: Expert in creating, validating, and managing APM agent packages with proper structure, validation, primitives organization, and cross-cutting concern management
 tools:
   ['execute/getTerminalOutput', 'execute/runInTerminal', 'read', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'todo']
+handoffs:
+  - label: Provision MCP Server
+    agent: mcp-specialist
+    prompt: Provision an MCP server for this agent package. Determine the appropriate server from the catalog, test connectivity, and provide configuration details for integration.
+    send: true
+  - label: Package Ready
+    agent: feature-lead
+    prompt: Agent package created, validated, and ready for use. Package structure verified, primitives populated, and MCP dependencies configured.
+    send: true
 ---
 
 # Agent Package Manager
