@@ -6,5 +6,7 @@ dependencies:
   apm:
     # Use our own package manager to help manage these packages
     - vineethsoma/agent-packages/agents/package-manager
+    # Use MCP specialist for server lifecycle management
+    - vineethsoma/agent-packages/agents/mcp-specialist
   mcp: []
 scripts: {}

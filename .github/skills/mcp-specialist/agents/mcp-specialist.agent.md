@@ -1,5 +1,5 @@
 ---
-name: mcp-specialist
+name: MCP Specialist
 description: Manages MCP server lifecycle, maintains server catalog, and provisions tools for agents
 tools: ['read', 'edit', 'execute', 'search', 'fetch']
 model: Claude Sonnet 4.5
