@@ -8,6 +8,5 @@ dependencies:
     - vineethsoma/agent-packages/agents/package-manager
     # Use MCP specialist for server lifecycle management
     - vineethsoma/agent-packages/agents/mcp-specialist
-  mcp:
-    - anthropics/mcp-server-filesystem
+  mcp: []
 scripts: {}

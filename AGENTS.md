@@ -1671,6 +1671,387 @@ ls -la .github/agents/
 - **Prompt Files**: https://code.visualstudio.com/docs/copilot/customization/prompt-files
 - **Custom Instructions**: https://code.visualstudio.com/docs/copilot/customization/custom-instructions
 
+## Files matching `**/*.spec.ts,**/*.test.ts,**/e2e/**,**/tests/**`
+
+<!-- Source: local skills/playwright-testing/.apm/instructions/playwright-standards.instructions.md -->
+# Playwright Testing Standards
+
+Apply professional E2E testing practices with Playwright.
+
+## Core Principles
+
+### I. Test Independence
+Every test MUST run independently without relying on other tests' state.
+
+**Why**: Parallel execution, debugging isolation, reliable CI/CD.
+
+```typescript
+// ✅ CORRECT - Each test sets up its own state
+test('user can add item to cart', async ({ page }) => {
+  await page.goto('/products');
+  await page.getByRole('button', { name: 'Add to Cart' }).first().click();
+  await expect(page.getByTestId('cart-count')).toHaveText('1');
+});
+
+test('user can remove item from cart', async ({ page }) => {
+  // Setup own state, don't rely on previous test
+  await page.goto('/products');
+  await page.getByRole('button', { name: 'Add to Cart' }).first().click();
+  
+  await page.getByTestId('cart-icon').click();
+  await page.getByRole('button', { name: 'Remove' }).click();
+  await expect(page.getByTestId('cart-count')).toHaveText('0');
+});
+
+// ❌ WRONG - Test depends on previous test's state
+test('user can add item to cart', async ({ page }) => {
+  await page.goto('/products');
+  await page.getByRole('button', { name: 'Add to Cart' }).first().click();
+});
+
+test('user can remove item from cart', async ({ page }) => {
+  // Assumes cart already has item - will fail if run alone!
+  await page.getByTestId('cart-icon').click();
+  await page.getByRole('button', { name: 'Remove' }).click();
+});
+```
+
+### II. Selector Hierarchy
+Use selectors in this priority order:
+
+1. **User-facing attributes** (best)
+   - `getByRole()` - Accessibility-first
+   - `getByLabel()` - Form fields
+   - `getByPlaceholder()` - Input hints
+   - `getByText()` - Visible content
+
+2. **Test IDs** (good)
+   - `getByTestId()` - Stable, explicit
+
+3. **CSS/XPath** (last resort)
+   - Brittle, breaks on styling changes
+
+```typescript
+// ✅ PRIORITY 1 - User-facing (best)
+await page.getByRole('button', { name: 'Submit' }).click();
+await page.getByLabel('Email').fill('user@example.com');
+await page.getByPlaceholder('Search products...').fill('laptop');
+await page.getByText('Welcome back!').isVisible();
+
+// ✅ PRIORITY 2 - Test IDs (good)
+await page.getByTestId('checkout-button').click();
+await page.getByTestId('price-display').textContent();
+
+// ❌ PRIORITY 3 - CSS/XPath (avoid)
+await page.locator('.btn-primary').click(); // Breaks if class changes
+await page.locator('//button[@id="submit"]').click(); // Fragile
+```
+
+### III. Wait for Conditions, Not Time
+Never use arbitrary `page.waitForTimeout()`. Wait for explicit conditions.
+
+```typescript
+// ✅ CORRECT - Wait for condition
+await page.getByRole('button', { name: 'Submit' }).click();
+await expect(page.getByText('Success!')).toBeVisible();
+await page.waitForURL('**/success');
+
+// ✅ CORRECT - Wait for network
+await page.route('**/api/submit', async route => {
+  await route.fulfill({ status: 200, body: JSON.stringify({ success: true }) });
+});
+await Promise.all([
+  page.waitForResponse(resp => resp.url().includes('/api/submit')),
+  page.getByRole('button', { name: 'Submit' }).click()
+]);
+
+// ❌ WRONG - Arbitrary timeout
+await page.getByRole('button', { name: 'Submit' }).click();
+await page.waitForTimeout(3000); // Flaky! May be too short or too long
+```
+
+### IV. Page Object Model (When Appropriate)
+Use Page Object Model for complex, reused flows.
+
+```typescript
+// ✅ Page Object for complex login flow
+class LoginPage {
+  constructor(private page: Page) {}
+
+  async goto() {
+    await this.page.goto('/login');
+  }
+
+  async login(email: string, password: string) {
+    await this.page.getByLabel('Email').fill(email);
+    await this.page.getByLabel('Password').fill(password);
+    await this.page.getByRole('button', { name: 'Sign In' }).click();
+    await expect(this.page).toHaveURL('/dashboard');
+  }
+
+  async loginWithGoogle() {
+    await this.page.getByRole('button', { name: 'Continue with Google' }).click();
+    // Handle OAuth flow
+  }
+}
+
+// Use in tests
+test('login with credentials', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  await loginPage.goto();
+  await loginPage.login('user@example.com', 'password123');
+  
+  await expect(page.getByText('Welcome back!')).toBeVisible();
+});
+
+// ❌ WRONG - Over-engineering simple interactions
+class ButtonPage {
+  constructor(private page: Page) {}
+  
+  async clickButton() { // Too granular!
+    await this.page.getByRole('button').click();
+  }
+}
+```
+
+### V. Assertions on Expected Behavior
+Assert what users expect to see/experience.
+
+```typescript
+// ✅ CORRECT - User-centric assertions
+await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+await expect(page.getByTestId('user-balance')).toHaveText('$1,234.56');
+await expect(page.getByRole('button', { name: 'Checkout' })).toBeEnabled();
+await expect(page).toHaveURL('/checkout');
+
+// ✅ CORRECT - Multiple related assertions
+await expect(page.getByTestId('product-card')).toContainText('Laptop');
+await expect(page.getByTestId('product-card')).toContainText('$999');
+await expect(page.getByTestId('product-card')).toContainText('In Stock');
+
+// ❌ WRONG - Implementation details
+const button = page.getByRole('button', { name: 'Submit' });
+expect(await button.getAttribute('class')).toContain('btn-primary'); // Who cares?
+```
+
+## Test Structure
+
+### Arrange-Act-Assert Pattern
+
+```typescript
+test('user can update profile name', async ({ page }) => {
+  // ARRANGE - Setup
+  await page.goto('/profile');
+  
+  // ACT - Execute action
+  await page.getByLabel('Name').fill('Jane Doe');
+  await page.getByRole('button', { name: 'Save' }).click();
+  
+  // ASSERT - Verify outcome
+  await expect(page.getByText('Profile updated successfully')).toBeVisible();
+  await expect(page.getByLabel('Name')).toHaveValue('Jane Doe');
+});
+```
+
+### File Organization
+
+```
+tests/
+├── e2e/
+│   ├── auth/
+│   │   ├── login.spec.ts
+│   │   ├── signup.spec.ts
+│   │   └── password-reset.spec.ts
+│   ├── checkout/
+│   │   ├── cart.spec.ts
+│   │   └── payment.spec.ts
+│   └── fixtures/
+│       └── test-users.ts
+├── pages/           # Page Objects (if needed)
+│   ├── login-page.ts
+│   └── checkout-page.ts
+└── playwright.config.ts
+```
+
+## Common Patterns
+
+### Testing Forms
+
+```typescript
+test('submit contact form', async ({ page }) => {
+  await page.goto('/contact');
+  
+  // Fill form
+  await page.getByLabel('Name').fill('John Smith');
+  await page.getByLabel('Email').fill('john@example.com');
+  await page.getByLabel('Message').fill('Hello, I need help with...');
+  
+  // Submit
+  await page.getByRole('button', { name: 'Send Message' }).click();
+  
+  // Verify success
+  await expect(page.getByText('Message sent successfully!')).toBeVisible();
+  
+  // Verify form cleared
+  await expect(page.getByLabel('Name')).toHaveValue('');
+  await expect(page.getByLabel('Email')).toHaveValue('');
+});
+```
+
+### Testing Authentication
+
+```typescript
+test.describe('protected routes', () => {
+  test('redirect to login when not authenticated', async ({ page }) => {
+    await page.goto('/dashboard');
+    await expect(page).toHaveURL('/login');
+  });
+
+  test('access dashboard when authenticated', async ({ page }) => {
+    // Login first
+    await page.goto('/login');
+    await page.getByLabel('Email').fill('user@example.com');
+    await page.getByLabel('Password').fill('password123');
+    await page.getByRole('button', { name: 'Sign In' }).click();
+    
+    // Navigate to protected route
+    await page.goto('/dashboard');
+    await expect(page).toHaveURL('/dashboard');
+    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+  });
+});
+```
+
+### Testing API Responses
+
+```typescript
+test('display error on failed submission', async ({ page }) => {
+  // Mock API failure
+  await page.route('**/api/submit', async route => {
+    await route.fulfill({
+      status: 400,
+      contentType: 'application/json',
+      body: JSON.stringify({ error: 'Email already exists' })
+    });
+  });
+  
+  await page.goto('/signup');
+  await page.getByLabel('Email').fill('existing@example.com');
+  await page.getByRole('button', { name: 'Sign Up' }).click();
+  
+  await expect(page.getByText('Email already exists')).toBeVisible();
+});
+```
+
+### Testing Accessibility
+
+```typescript
+test('keyboard navigation works', async ({ page }) => {
+  await page.goto('/products');
+  
+  // Tab to first product
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Tab');
+  
+  // Enter to select
+  await page.keyboard.press('Enter');
+  
+  await expect(page).toHaveURL(/\/products\/.+/);
+});
+
+test('screen reader accessible', async ({ page }) => {
+  await page.goto('/checkout');
+  
+  // All interactive elements have labels
+  await expect(page.getByLabel('Card Number')).toBeVisible();
+  await expect(page.getByLabel('Expiry Date')).toBeVisible();
+  await expect(page.getByLabel('CVV')).toBeVisible();
+  
+  // Buttons have accessible names
+  await expect(page.getByRole('button', { name: 'Complete Purchase' })).toBeVisible();
+});
+```
+
+## Configuration Best Practices
+
+**playwright.config.ts**:
+
+```typescript
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './tests/e2e',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
+  use: {
+    baseURL: 'http://localhost:3000',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+  },
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+    {
+      name: 'Mobile Chrome',
+      use: { ...devices['Pixel 5'] },
+    },
+  ],
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+  },
+});
+```
+
+## Anti-Patterns to Avoid
+
+**🚫 Flaky Tests**:
+```typescript
+// ❌ Race conditions
+await page.getByRole('button').click();
+const text = await page.getByTestId('result').textContent(); // May not be ready!
+
+// ✅ Wait for condition
+await page.getByRole('button').click();
+await expect(page.getByTestId('result')).toHaveText('Expected text');
+```
+
+**🚫 Hard-coded Waits**:
+```typescript
+// ❌ Arbitrary timeout
+await page.waitForTimeout(5000);
+
+// ✅ Explicit condition
+await page.waitForLoadState('networkidle');
+```
+
+**🚫 Testing Implementation Details**:
+```typescript
+// ❌ Internal state
+expect(await page.evaluate(() => window.myApp.state)).toBe('loaded');
+
+// ✅ User-visible outcome
+await expect(page.getByText('Content loaded')).toBeVisible();
+```
+
+---
+
+**Remember**: Write tests from the user's perspective. If a user can't see or interact with it, don't test it.
+
 ## Files matching `**/SKILL.md`
 
 <!-- Source: local agents/package-manager/.apm/instructions/agent-skills-spec.instructions.md -->
@@ -2027,6 +2408,316 @@ dir_name=$(basename "$PWD")
 - **Official Spec**: https://agentskills.io/specification
 - **skills-ref Library**: https://github.com/agentskills/agentskills/tree/main/skills-ref
 - **Example Skills**: https://github.com/agentskills/agentskills
+
+## Files matching `**/compose.yaml,**/compose.yml,**/docker-compose.yaml,**/docker-compose.yml`
+
+<!-- Source: local skills/docker-compose/.apm/instructions/compose-standards.instructions.md -->
+# Docker Compose Standards for MCP Servers
+
+Apply these standards when creating or modifying Docker Compose configurations for MCP servers.
+
+## File Naming
+
+**Preferred**: `compose.yaml` (official Docker recommendation)
+**Acceptable**: `docker-compose.yaml`, `compose.yml`, `docker-compose.yml`
+
+## MCP Server Requirements
+
+### Stdio Protocol Support
+
+**MANDATORY for all MCP servers**:
+```yaml
+services:
+  mcp-server:
+    stdin_open: true  # REQUIRED
+    tty: true         # REQUIRED
+```
+
+**Rationale**: MCP servers communicate via stdin/stdout, not HTTP. Without these settings, the MCP protocol won't function.
+
+### No Port Mapping Needed
+
+MCP stdio-based servers don't need `ports:` section:
+```yaml
+services:
+  playwright-mcp:
+    image: mcr.microsoft.com/playwright/mcp:latest
+    stdin_open: true
+    tty: true
+    # No ports: section needed
+```
+
+## Service Configuration Best Practices
+
+### Image Pinning
+
+**Production**:
+```yaml
+image: postgres:16.1  # Pin to specific version
+```
+
+**Development**:
+```yaml
+image: postgres:16    # Major version OK
+image: postgres:latest  # Acceptable for local dev only
+```
+
+### Restart Policies
+
+```yaml
+restart: unless-stopped  # RECOMMENDED for MCP servers
+restart: always          # Alternative (restarts even after manual stop)
+restart: on-failure      # Only restart on error exit codes
+restart: "no"            # Default (no restart)
+```
+
+**Rationale**: `unless-stopped` provides automatic recovery while respecting manual stops.
+
+### Resource Limits
+
+**Always set limits** to prevent resource exhaustion:
+```yaml
+deploy:
+  resources:
+    limits:
+      cpus: '1.0'
+      memory: 1G
+    reservations:
+      cpus: '0.5'
+      memory: 512M
+```
+
+**Typical MCP server resources**:
+- CPU: 0.5-1.0 cores
+- Memory: 512M-1G
+
+### Volume Mounts
+
+**Read-only when possible**:
+```yaml
+volumes:
+  - ./workspace:/workspace:ro  # Read-only access
+  - ./data:/data               # Read-write for output
+```
+
+**Use named volumes for persistence**:
+```yaml
+volumes:
+  - mcp-data:/data
+
+volumes:
+  mcp-data:
+    # Docker manages storage location
+```
+
+## Health Checks
+
+**Include health checks for dependent services**:
+```yaml
+services:
+  database:
+    image: postgres:16
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user", "-d", "db"]
+      interval: 2s
+      timeout: 2s
+      retries: 3
+      start_period: 2s
+
+  app:
+    depends_on:
+      database:
+        condition: service_healthy  # Wait for health check
+```
+
+**Health check components**:
+- `test`: Command to check health
+- `interval`: How often to check
+- `timeout`: Max time for single check
+- `retries`: Failures before marking unhealthy
+- `start_period`: Grace period on startup
+
+## Environment Variables
+
+**Use `.env` files for configuration**:
+```yaml
+services:
+  database:
+    env_file:
+      - .env
+      - .env.local  # Override with local settings
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}  # Reference from .env
+      POSTGRES_USER: ${DB_USER}
+```
+
+**Never commit secrets** to version control:
+```bash
+# .gitignore
+.env.local
+.env.override
+*.secret
+```
+
+## Networks
+
+**Explicit networks for isolation**:
+```yaml
+services:
+  frontend:
+    networks:
+      - public
+
+  backend:
+    networks:
+      - public
+      - private
+
+  database:
+    networks:
+      - private  # Only accessible to backend
+
+networks:
+  public:
+  private:
+```
+
+**Default network**: Docker creates default network for all services automatically.
+
+**Service DNS**: Containers can reach each other by service name:
+```yaml
+services:
+  app:
+    # Can connect to database at: postgresql://database:5432
+  database:
+    image: postgres:16
+```
+
+## Service Dependencies
+
+**Basic dependency**:
+```yaml
+services:
+  app:
+    depends_on:
+      - database  # Start database first
+```
+
+**Conditional dependency** (recommended):
+```yaml
+services:
+  app:
+    depends_on:
+      database:
+        condition: service_healthy  # Wait for health check
+        restart: true               # Restart if database restarts
+```
+
+## File Organization
+
+**Standard structure**:
+```
+mcp-servers/
+├── compose.yaml          # Main configuration
+├── .env                  # Environment variables (gitignored)
+├── .env.example          # Template (committed)
+├── README.md             # Setup instructions
+└── data/                 # Persistent data (gitignored)
+    ├── playwright/
+    └── filesystem/
+```
+
+## Validation
+
+**Check syntax**:
+```bash
+docker compose config
+```
+
+**Validate and view merged config**:
+```bash
+docker compose config --resolve-image-digests
+```
+
+## Anti-Patterns
+
+❌ **Missing stdio flags for MCP servers**:
+```yaml
+services:
+  playwright:
+    image: mcr.microsoft.com/playwright/mcp:latest
+    # Missing stdin_open and tty - MCP won't work!
+```
+
+❌ **Using :latest in production**:
+```yaml
+image: postgres:latest  # Unpredictable updates
+```
+
+❌ **No resource limits**:
+```yaml
+services:
+  app:
+    # No deploy.resources - can exhaust host resources
+```
+
+❌ **Hardcoded secrets**:
+```yaml
+environment:
+  DB_PASSWORD: "mysecretpassword"  # NEVER do this
+```
+
+❌ **Incorrect volume syntax**:
+```yaml
+volumes:
+  - /data  # Anonymous volume, data lost on removal
+```
+
+✅ **Correct volume syntax**:
+```yaml
+volumes:
+  - mcp-data:/data  # Named volume, data persists
+```
+
+## Example: Complete MCP Server Configuration
+
+```yaml
+version: '3'
+
+services:
+  playwright:
+    image: mcr.microsoft.com/playwright/mcp:1.0.0  # Pinned version
+    container_name: playwright-mcp
+    stdin_open: true  # REQUIRED for MCP
+    tty: true         # REQUIRED for MCP
+    restart: unless-stopped
+    volumes:
+      - playwright-data:/data
+      - ./workspace:/workspace:ro
+    networks:
+      - mcp-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+
+networks:
+  mcp-network:
+    driver: bridge
+
+volumes:
+  playwright-data:
+```
+
+---
+
+**Remember**: MCP servers need `stdin_open: true` and `tty: true`. Always set resource limits. Pin versions in production.
 
 ## Files matching `src/**,api/**,frontend/**,backend/**`
 
