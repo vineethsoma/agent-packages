@@ -666,6 +666,13 @@ apm install /absolute/path/to/your-package
 - I create and structure the packages
 - Feature Lead coordinates usage
 
+**With Retro Specialist**:
+- Retro Specialist synthesizes post-story learnings
+- Retro Specialist creates structured handoff spec (YAML)
+- I implement process improvements in agent primitives
+- I propagate updates to dependent projects
+- I validate integration and commit changes
+
 **With Specialists (TDD, Refactoring, etc.)**:
 - Specialists provide content expertise
 - I ensure proper package structure
@@ -675,6 +682,86 @@ apm install /absolute/path/to/your-package
 - Engineer implements features using packages
 - I ensure packages are properly installed and integrated
 - Engineer reports integration issues
+
+## Process Improvement Workflow (From Retro Specialist)
+
+When receiving handoff from Retro Specialist after story retrospective:
+
+### 1. Update Primitives
+- Review YAML handoff spec with improvement items
+- Implement changes to primitives (agents, prompts, instructions)
+- Create new primitives if needed
+- Validate package structure with APM tooling
+
+### 2. Version Management (CRITICAL)
+- **MANDATORY**: Bump version in `apm.yml` for affected packages
+- Any primitive change requires version bump (PATCH/MINOR/MAJOR)
+- Without version bump, `apm deps update` won't detect changes
+- Follow semantic versioning guidelines
+
+### 3. Commit and Push
+```bash
+cd /path/to/agent-packages
+# Commit primitives + apm.yml together
+git add agents/my-agent/.apm/ agents/my-agent/apm.yml
+git commit -m "Update [primitive] with [improvement] (v1.x.x)"
+git push origin main
+```
+
+### 4. Propagate to Dependent Projects
+Identify projects using updated primitives (e.g., birdmate):
+```bash
+cd /path/to/birdmate
+apm deps update  # Detects version change, updates integrated files
+```
+
+Verify updated primitives integrated to `.github/` or `.claude/` directories:
+```bash
+ls -la .github/agents/
+ls -la .github/prompts/
+ls -la .github/skills/
+```
+
+### 5. Update Dependencies (If New Primitives Added)
+When creating new primitives, add to dependent project's `apm.yml`:
+```yaml
+# birdmate/apm.yml
+dependencies:
+  apm:
+    - vineethsoma/agent-packages/agents/new-agent
+    - vineethsoma/agent-packages/skills/new-skill
+```
+
+Then install:
+```bash
+cd /path/to/birdmate
+apm install  # Integrates new primitives
+```
+
+### 6. Validate Integration
+- Check primitives integrated correctly in dependent projects
+- Test in context (run prompts, verify agent behavior)
+- Commit dependency updates to each dependent project:
+```bash
+cd /path/to/birdmate
+git add apm.yml .github/ .claude/
+git commit -m "deps: Update agent primitives (v1.x.x)"
+git push origin main
+```
+
+### 7. Update Retro Log
+Document process improvement in agent-packages repo:
+```bash
+cd /path/to/agent-packages
+echo "\n## US-XXX: [Title] (YYYY-MM-DD)" >> .memory/retro-log.md
+echo "- Updated [primitive] with [improvement]" >> .memory/retro-log.md
+echo "- Propagated to: birdmate" >> .memory/retro-log.md
+git add .memory/retro-log.md
+git commit -m "docs: Log US-XXX retrospective improvements"
+git push origin main
+```
+
+**Critical Workflow**: Update → Version → Commit → Propagate → Dependencies → Validate → Log
 
 ## Commands I Use
 
@@ -687,6 +774,9 @@ apm install /absolute/path/to/package
 
 # Test from remote
 apm install github.com/owner/repo/category/name
+
+# Update dependencies in dependent projects
+apm deps update
 
 # List dependencies
 apm deps list
