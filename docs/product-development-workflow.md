@@ -82,7 +82,7 @@ Agent handoff state diagrams documenting how agents coordinate during feature de
 | **code-quality-auditor** | feature-lead | "Review Approved" | ✅ | Quality gate passed |
 | **code-quality-auditor** | tdd-specialist | "Request TDD Validation" | ✅ | Validate test coverage |
 | **feature-lead** | retro-specialist | "Run Story Retrospective" | ✅ | Facilitate retro after merge |
-| **retro-specialist** | agent-package-manager | "Implement Process Improvements" | ✅ | Update skills/agents/templates |
+| **retro-specialist** | agent-package-manager | "Implement Process Improvements" | ✅ | Update primitives + propagate to dependent projects |
 | **retro-specialist** | feature-lead | "Retro Complete" | ✅ | Return to orchestrator |
 
 > **Note**: All handoffs are autonomous (`send: true`) - no manual approval required.
@@ -172,8 +172,14 @@ Post-merge learning cycle:
 2. Retro Specialist gathers structured YAML input from all contributors
 3. Retro Specialist synthesizes successes and improvements
 4. Retro Specialist creates handoff spec for Agent Package Manager
-5. Agent Package Manager implements changes (skills, agents, templates)
-6. Agent Package Manager updates `.memory/retro-log.md` and bumps versions
+5. Agent Package Manager implements process improvements:
+   - **Update**: Modify primitives (agents, prompts, instructions)
+   - **Version**: Bump version in `apm.yml` (MANDATORY for any primitive change)
+   - **Commit**: Push to agent-packages repository
+   - **Propagate**: Run `apm deps update` in dependent projects (e.g., birdmate)
+   - **Dependencies**: Add new primitives to project's `apm.yml` if created
+   - **Validate**: Verify integration in `.github/` or `.claude/` directories
+6. Agent Package Manager updates `.memory/retro-log.md` and commits to dependent projects
 
 ## State Diagram (Mermaid)
 
