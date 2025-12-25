@@ -1,0 +1,20 @@
+# APM Workflow Configuration
+# This file configures the workflow directory structure for process automation scripts
+
+# Current feature being developed
+current_feature: [feature-id]
+
+# Directory structure paths
+# Scripts use these patterns with {feature} and {story-id} placeholders
+directory_structure:
+  specs_root: specs
+  stories_path: specs/{feature}/stories/{story-id}
+  delegation_dir: specs/{feature}/stories/{story-id}/delegation
+  checklists_dir: specs/{feature}/stories/{story-id}/checklists
+  retro_dir: specs/{feature}/stories/{story-id}/retro
+
+# Example: For feature "bird-search" and story "us-001":
+# - Story root: specs/bird-search/stories/us-001/
+# - Delegation: specs/bird-search/stories/us-001/delegation/
+# - Checklists: specs/bird-search/stories/us-001/checklists/
+# - Retrospective: specs/bird-search/stories/us-001/retro/
