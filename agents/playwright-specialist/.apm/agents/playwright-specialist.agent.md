@@ -1,5 +1,5 @@
 ---
-name: Playwright Specialist
+name: playwright-specialist
 description: E2E testing expert using Playwright for browser automation and test generation
 tools: ['read', 'edit', 'search', 'execute']
 model: Claude Sonnet 4.5
