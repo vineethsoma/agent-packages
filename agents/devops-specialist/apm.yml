@@ -1,0 +1,7 @@
+name: devops-specialist
+version: 1.0.0
+description: CI/CD pipeline expert specializing in GitHub Actions, Docker, integration test automation, and deployment workflows
+author: Agent Package Manager
+type: hybrid
+dependencies:
+  apm: []

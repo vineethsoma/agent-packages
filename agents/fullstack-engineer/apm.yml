@@ -1,6 +1,6 @@
 name: fullstack-engineer
-version: 2.3.0
-description: Expert full-stack engineer delivering production-ready code with Spec-Driven Development, TDD, CLAUDE Framework standards, comprehensive refactoring patterns, vector search, and secure development practices.
+version: 2.4.0
+description: Expert full-stack engineer with Playwright integration testing, delivering production-ready code with Spec-Driven Development, TDD, CLAUDE Framework standards, comprehensive refactoring patterns, vector search, and secure development practices.
 author: Vineeth Soma
 type: hybrid
 dependencies:
@@ -12,5 +12,6 @@ dependencies:
     - vineethsoma/agent-packages/skills/spec-driven-development
     - vineethsoma/agent-packages/skills/vector-search
     - vineethsoma/agent-packages/skills/secure-development
+    - vineethsoma/agent-packages/skills/integration-testing
   mcp: []
 scripts: {}
