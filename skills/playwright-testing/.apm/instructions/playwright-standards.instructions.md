@@ -301,6 +301,77 @@ test('screen reader accessible', async ({ page }) => {
 });
 ```
 
+## Evidence Collection for Integration Verification
+
+**MANDATORY**: All E2E tests MUST capture screenshots for PR evidence.
+
+**Purpose**: Provide visual proof of integration working end-to-end for PR reviews.
+
+### Screenshot Capture Pattern
+
+```typescript
+test('search for bird by description', async ({ page }) => {
+  await page.goto('/');
+  
+  // BEFORE screenshot - initial state
+  await page.screenshot({ 
+    path: 'evidence/search-before.png',
+    fullPage: true 
+  });
+  
+  // Execute user action
+  await page.getByLabel('Search birds').fill('red chest grey back');
+  await page.getByRole('button', { name: 'Search' }).click();
+  
+  // Wait for results
+  await expect(page.getByText('American Robin')).toBeVisible();
+  
+  // AFTER screenshot - final state
+  await page.screenshot({ 
+    path: 'evidence/search-after.png',
+    fullPage: true 
+  });
+});
+```
+
+### Evidence Directory Structure
+
+```
+e2e/
+├── bird-search.spec.ts
+└── evidence/              # Auto-generated screenshots
+    ├── search-before.png
+    ├── search-after.png
+    ├── filter-before.png
+    └── filter-after.png
+```
+
+### When to Capture Screenshots
+
+1. **Before user action** - Shows initial state
+2. **After user action** - Shows result state
+3. **On critical assertions** - Visual proof of expected behavior
+4. **Error states** - Capture validation errors, empty states
+
+### Screenshot Options
+
+```typescript
+await page.screenshot({
+  path: 'evidence/screenshot-name.png',
+  fullPage: true,           // Capture entire page (recommended)
+  clip: { x, y, width, height }, // Capture specific region
+  animations: 'disabled',   // Disable animations for stable capture
+});
+```
+
+### Integration with PR Workflow
+
+**Fullstack Engineer** uploads these screenshots to PR:
+1. Run E2E tests: `npm run test:e2e`
+2. Screenshots generated in `e2e/evidence/`
+3. Upload via `mcp.github.uploadFile` when creating PR
+4. Reference in PR description as integration evidence
+
 ## Configuration Best Practices
 
 **playwright.config.ts**:
@@ -318,7 +389,8 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
+    screenshot: 'only-on-failure',  // For test failures
+    // Note: Evidence screenshots use explicit page.screenshot() calls
   },
   projects: [
     {

@@ -18,6 +18,8 @@ handoffs:
 
 I am your **E2E testing expert** specializing in Playwright automation.
 
+**Critical Mandate**: All E2E tests MUST include screenshot capture for integration evidence.
+
 ## Prerequisites
 
 **Requires Microsoft Playwright MCP server**.
