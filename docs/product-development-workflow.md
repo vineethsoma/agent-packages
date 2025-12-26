@@ -57,16 +57,18 @@ Agent handoff state diagrams documenting how agents coordinate during feature de
 
 ## Agents Overview
 
-| Agent | Role | Phase | Version | Model |
-|-------|------|-------|---------|-------|
-| **feature-lead** | Orchestrator - coordinates multi-story features | Development | - | Claude Opus 4.5 |
-| **fullstack-engineer** | Implementation with Playwright integration verification | Development | v2.4.0 | Claude Sonnet 4.5 |
-| **tdd-specialist** | Quality - enforces TDD discipline | Development | - | Claude Sonnet 4.5 |
-| **playwright-specialist** | E2E Testing - browser automation | Integration | - | Claude Sonnet 4.5 |
-| **code-quality-auditor** | Review - CLAUDE Framework compliance | Quality Gate | - | Claude Sonnet 4.5 |
-| **devops-specialist** | CI/CD - GitHub Actions, Docker, deployment automation | Continuous | v1.0.0 | Claude Sonnet 4.5 |
-| **retro-specialist** | Facilitation - retrospectives with subagent consultation | Post-Merge | v1.2.0 | Claude Sonnet 4.5 |
-| **agent-package-manager** | Maintenance - implements process improvements | Continuous | - | Claude Sonnet 4.5 |
+| Agent | Role | Phase | Version | Model | GitHub Tools |
+|-------|------|-------|---------|-------|--------------|
+| **feature-lead** | Orchestrator - coordinates multi-story features | Development | - | Claude Opus 4.5 | MCP: merge PR, read PR |
+| **fullstack-engineer** | Implementation with Playwright integration verification | Development | v2.4.0 | Claude Sonnet 4.5 | MCP: create PR, push code |
+| **tdd-specialist** | Quality - enforces TDD discipline | Development | - | Claude Sonnet 4.5 | MCP: comment PR, label PR |
+| **playwright-specialist** | E2E Testing - browser automation | Integration | - | Claude Sonnet 4.5 | MCP: comment PR |
+| **code-quality-auditor** | Review - CLAUDE Framework compliance | Quality Gate | - | Claude Sonnet 4.5 | MCP: comment PR, label PR |
+| **devops-specialist** | CI/CD - GitHub Actions, Docker, deployment automation | Continuous | v1.0.0 | Claude Sonnet 4.5 | MCP: create workflows |
+| **retro-specialist** | Facilitation - retrospectives with subagent consultation | Post-Merge | v1.2.0 | Claude Sonnet 4.5 | MCP: read PR history |
+| **agent-package-manager** | Maintenance - implements process improvements | Continuous | - | Claude Sonnet 4.5 | Git CLI only |
+
+**GitHub Integration**: All agents use [microsoft/github-mcp](https://github.com/microsoft/github-mcp) server as primary interface, fallback to GitHub CLI if MCP unavailable.
 
 ## Handoff Table
 
@@ -501,7 +503,38 @@ Product Owner (Feature Lead) rejects during acceptance
 4. ✅ Code committed to feature branch
 5. ✅ Branch rebased on latest main
 
-**Agent**: Fullstack Engineer creates PR before handoff to TDD Specialist
+**Agent**: Fullstack Engineer creates PR autonomously using GitHub MCP tools
+
+**GitHub MCP Actions**:
+```typescript
+// Fullstack Engineer uses GitHub MCP server
+await mcp.github.createPullRequest({
+  owner: 'vineethsoma',
+  repo: 'birdmate',
+  title: 'US-002: Bird Species Detail Page',
+  head: 'feat-us2',
+  base: 'main',
+  body: generatePRDescription(), // Uses template with evidence
+  draft: false
+});
+
+// Attach evidence files
+await mcp.github.uploadFile({
+  path: '.playwright-mcp/us2-home.png',
+  message: 'Integration evidence: Home page'
+});
+```
+
+**Fallback (if MCP unavailable)**:
+```bash
+gh pr create \
+  --title "US-002: Bird Species Detail Page" \
+  --body-file pr-description.md \
+  --base main \
+  --head feat-us2
+```
+
+**Human Role**: Monitor PR creation, intervene only if agent encounters errors
 
 ### PR Template with Quality Gate Checklist
 
@@ -736,35 +769,77 @@ jobs:
    - GitHub Actions run URL
    - All jobs green
 
-### PR Review Flow with Agents
+### PR Review Flow with Agents (Fully Autonomous)
 
 ```
-Fullstack Engineer creates PR
+Fullstack Engineer creates PR via GitHub MCP
         │
-        ├─ Attaches evidence
-        ├─ Fills quality gate checklist
-        └─ Requests review from @tdd-specialist
+        ├─ Uses mcp.github.createPullRequest()
+        ├─ Attaches evidence with mcp.github.uploadFile()
+        ├─ Fills quality gate checklist in PR body
+        └─ Adds label "ready-for-review" with mcp.github.addLabel()
         │
         ▼
 CI Pipeline executes (automated)
         │
         ├─ ✅ All jobs passing → Continue
-        └─ ❌ Any job failing → Changes requested (back to Fullstack Engineer)
+        └─ ❌ Any job failing → Fullstack Engineer notified, fixes issues
         │
         ▼
-TDD Specialist reviews
+TDD Specialist reviews via GitHub MCP
         │
-        ├─ Validates TDD compliance
-        ├─ Checks test quality
-        └─ Requests @code-quality-auditor review
+        ├─ Uses mcp.github.getPullRequest() to read PR
+        ├─ Validates TDD compliance from git history
+        ├─ Checks test coverage from CI artifacts
+        ├─ Posts review with mcp.github.createReview()
+        │   └─ Type: "APPROVE" or "REQUEST_CHANGES"
+        ├─ Adds label "tdd-approved" with mcp.github.addLabel()
+        └─ Comments: "@code-quality-auditor please review"
         │
         ▼
-Code Quality Auditor reviews
+Code Quality Auditor reviews via GitHub MCP
         │
-        ├─ CLAUDE Framework audit
-        ├─ Security scan
-        ├─ Performance check
-        └─ Approves or requests changes
+        ├─ Uses mcp.github.getPullRequest() to read PR
+        ├─ Performs CLAUDE Framework audit
+        ├─ Security scan of code changes
+        ├─ Performance validation
+        ├─ Posts review with mcp.github.createReview()
+        │   └─ Type: "APPROVE" or "REQUEST_CHANGES"
+        ├─ Adds label "quality-approved" with mcp.github.addLabel()
+        └─ Comments: "@feature-lead ready for acceptance"
+        │
+        ▼
+Feature Lead validates via GitHub MCP
+        │
+        ├─ Uses mcp.github.getPullRequest() to read all reviews
+        ├─ Validates acceptance criteria met
+        ├─ Checks all evidence satisfactory
+        ├─ Posts final approval with mcp.github.createReview()
+        ├─ Adds label "accepted" with mcp.github.addLabel()
+        └─ Merges PR with mcp.github.mergePullRequest()
+        │
+        ▼
+Merged to main → CI runs final checks → Feature Lead triggers retrospective
+```
+
+**GitHub MCP Tool Usage**:
+
+| Action | MCP Function | Agent | Fallback CLI |
+|--------|-------------|-------|--------------|
+| Create PR | `mcp.github.createPullRequest()` | Fullstack Engineer | `gh pr create` |
+| Add label | `mcp.github.addLabel()` | All review agents | `gh pr edit --add-label` |
+| Post comment | `mcp.github.createComment()` | All review agents | `gh pr comment` |
+| Submit review | `mcp.github.createReview()` | Review agents | `gh pr review --approve` |
+| Request changes | `mcp.github.createReview({ event: 'REQUEST_CHANGES' })` | Review agents | `gh pr review --request-changes` |
+| Upload file | `mcp.github.uploadFile()` | Fullstack Engineer | `git add && git commit` |
+| Read PR | `mcp.github.getPullRequest()` | All agents | `gh pr view` |
+| Merge PR | `mcp.github.mergePullRequest()` | Feature Lead | `gh pr merge` |
+
+**Human Role**: 
+- **Monitor** agent activity in GitHub UI
+- **Intervene** only if agents encounter errors or unexpected states
+- **Guide** by providing clarifications when agents ask questions
+- **Override** agent decisions if business/security concerns arise
         │
         ▼
 Feature Lead validates
@@ -820,18 +895,25 @@ restrictions:
   allow_deletions: false
 ```
 
-### Example: PR Lifecycle with CI
+### Example: Fully Autonomous PR Lifecycle
 
-**US-002 Pull Request**:
+**US-002 Pull Request** (Agents handle everything):
 
 ```
-1. Fullstack Engineer creates PR
-   - Title: "US-002: Bird Species Detail Page"
-   - Branch: feat-us2 → main
-   - Evidence attached (3 screenshots, console logs, network traces)
-   - Quality gate checklist filled
+1. Fullstack Engineer creates PR via GitHub MCP
+   MCP: mcp.github.createPullRequest({
+     title: "US-002: Bird Species Detail Page",
+     head: "feat-us2",
+     base: "main",
+     body: prTemplate // Generated from template with evidence links
+   })
+   
+   MCP: mcp.github.uploadFile() // 3 screenshots
+   MCP: mcp.github.addLabel("ready-for-review")
+   
+   Agent output: "✅ PR #42 created: https://github.com/vineethsoma/birdmate/pull/42"
 
-2. CI Pipeline executes (5 minutes)
+2. CI Pipeline executes (5 minutes, automated)
    ✅ Backend tests: 145 passed, 85% coverage
    ✅ Frontend tests: 89 passed, 82% coverage
    ✅ Integration tests: 12 passed
@@ -840,9 +922,24 @@ restrictions:
    ✅ Type check: No errors
    ✅ Build: Success
 
-3. TDD Specialist review (agent)
-   - Reviews test quality
-   - Validates TDD commits (RED→GREEN→REFACTOR pattern in git log)
+3. TDD Specialist review (agent, autonomous)
+   MCP: mcp.github.getPullRequest(42) // Read PR details
+   MCP: mcp.github.getCommits(42) // Check TDD commit pattern
+   
+   Agent analyzes:
+   - Git history shows RED→GREEN→REFACTOR cycles ✅
+   - Test coverage 85% backend, 82% frontend ✅
+   - Test quality high (good assertions, edge cases) ✅
+   
+   MCP: mcp.github.createReview({
+     pull_number: 42,
+     event: "APPROVE",
+     body: "✅ TDD Specialist Review APPROVED\n\n**Coverage**: Backend 85%, Frontend 82%\n**TDD Discipline**: Excellent (verified RED→GREEN→REFACTOR)\n**Test Quality**: High\n\n@code-quality-auditor please review"
+   })
+   
+   MCP: mcp.github.addLabel("tdd-approved")
+   
+   Agent output: "✅ TDD review approved, requested Code Quality review"
    - ✅ Approves: "Excellent test coverage and discipline"
 
 4. Code Quality Auditor review (agent)
@@ -851,29 +948,86 @@ restrictions:
    - Performance: Acceptable
    - ✅ Approves: "Meets quality standards"
 
-5. Feature Lead review (product owner)
-   - Validates acceptance criteria (all 5 met)
-   - Reviews integration evidence
-   - Runs live demo (successful)
-   - ✅ Approves and merges
+4. Code Quality Auditor review (agent, autonomous)
+   MCP: mcp.github.getPullRequest(42)
+   MCP: mcp.github.getFiles(42) // Get changed files for audit
+   
+   Agent performs:
+   - CLAUDE Framework audit: Grade B (25/30) ✅
+   - Security scan: No vulnerabilities ✅
+   - Performance check: Acceptable ✅
+   
+   MCP: mcp.github.createReview({
+     pull_number: 42,
+     event: "APPROVE",
+     body: "✅ Code Quality Review APPROVED\n\n**CLAUDE Audit**: Grade B (25/30)\n**Security**: No vulnerabilities\n**Performance**: Acceptable\n\n@feature-lead ready for acceptance validation"
+   })
+   
+   MCP: mcp.github.addLabel("quality-approved")
+   
+   Agent output: "✅ Quality review approved, notified Feature Lead"
 
-6. Merged to main
-   - Final CI run: All checks passing
-   - Deployed to staging (automatic)
+5. Feature Lead validation (agent, autonomous)
+   MCP: mcp.github.getPullRequest(42) // Read all reviews
+   MCP: mcp.github.getComments(42) // Check discussion
+   
+   Agent validates:
+   - Acceptance criteria: All 5 met ✅
+   - Integration evidence: Screenshots + logs present ✅
+   - CI status: All checks passing ✅
+   - Agent reviews: TDD + Quality both approved ✅
+   
+   Human intervenes: Runs live demo (optional validation)
+   Human confirms: "Acceptance criteria validated, merge approved"
+   
+   MCP: mcp.github.createReview({
+     pull_number: 42,
+     event: "APPROVE",
+     body: "✅ Feature Lead APPROVED\n\n**Acceptance Criteria**: All met\n**Demo Result**: Successful\n**Merging to main**"
+   })
+   
+   MCP: mcp.github.addLabel("accepted")
+   
+   MCP: mcp.github.mergePullRequest({
+     pull_number: 42,
+     merge_method: "squash"
+   })
+   
+   Agent output: "✅ PR #42 merged to main. Triggering retrospective."
 
-7. Retrospective triggered
-   - Feature Lead → Retro Specialist handoff
+6. Post-merge (automated)
+   - Final CI run: All checks passing ✅
+   - Deployed to staging (GitHub Actions)
+   
+   Feature Lead agent:
+   MCP: runSubagent("retro-specialist", {
+     prompt: "Run retrospective for US-002 (PR #42)"
+   })
+
+7. Retrospective (agent, autonomous)
+   Retro Specialist:
+   MCP: mcp.github.getPullRequest(42) // Full PR context
+   
+   Consults 5 subagents for feedback
+   Creates handoff spec for Agent Package Manager
+   
+   Agent output: "✅ Retrospective complete. Process improvements identified."
 ```
 
-### Key Benefits of PR Workflow
+**Total autonomous actions: 15+** (PR creation, labels, reviews, approvals, merge, retro)
+**Human involvement**: Monitor + optional demo validation + guidance when asked
+
+### Key Benefits of Fully Autonomous PR Workflow
 
 1. **CI automates repetitive checks** (tests, linting, build)
 2. **Evidence is permanently attached** to PR (audit trail)
 3. **Quality gates are explicit** in checklist (transparency)
-4. **Agent reviews are structured** (clear expectations)
-5. **Defect loops are visible** (changes requested history)
+4. **Agent reviews are structured** via GitHub MCP (clear expectations)
+5. **Defect loops are visible** (changes requested history in PR)
 6. **Acceptance is documented** (Feature Lead approval comment)
 7. **Retrospectives have context** (PR link provides full story history)
+8. **Fully autonomous** (human guides, agents execute)
+9. **Fallback to CLI** if MCP unavailable (resilient workflow)
 
 ## State Diagram (Mermaid)
 
@@ -1089,10 +1243,182 @@ Retro Specialist will:
 3. Create handoff spec for Agent Package Manager
 4. Facilitate continuous improvement
 
+## GitHub MCP Configuration
+
+### Setup GitHub MCP Server
+
+**Install MCP server**:
+```bash
+# Add to apm.yml dependencies
+dependencies:
+  mcp:
+    - microsoft/github-mcp
+```
+
+**Configure for agents**:
+```yaml
+# .github/mcp-config.yml
+servers:
+  github:
+    command: npx
+    args:
+      - -y
+      - @microsoft/github-mcp
+    env:
+      GITHUB_TOKEN: ${GITHUB_PAT}  # Personal Access Token with repo scope
+```
+
+**Required GitHub Token Scopes**:
+- `repo` - Full control of repositories
+- `workflow` - Update GitHub Actions workflows
+- `write:discussion` - Create/edit PR reviews and comments
+
+**Security**:
+- Store `GITHUB_PAT` in environment variable or secure vault
+- Never commit token to repository
+- Use fine-grained tokens with minimum required permissions
+
+### Agent MCP Tool Configuration
+
+Update each agent's `.agent.md` file to include GitHub MCP tools:
+
+**Fullstack Engineer**:
+```yaml
+---
+name: fullstack-engineer
+tools: 
+  - execute
+  - read
+  - edit
+  - search
+  - playwright/*
+  - github/*  # All GitHub MCP tools
+mcp-servers:
+  - name: github
+    tools:
+      - createPullRequest
+      - uploadFile
+      - addLabel
+      - getPullRequest
+---
+```
+
+**TDD Specialist**:
+```yaml
+---
+name: tdd-specialist
+tools:
+  - read
+  - search
+  - github/*
+mcp-servers:
+  - name: github
+    tools:
+      - getPullRequest
+      - createReview
+      - createComment
+      - addLabel
+---
+```
+
+**Code Quality Auditor**:
+```yaml
+---
+name: code-quality-auditor
+tools:
+  - read
+  - search
+  - github/*
+mcp-servers:
+  - name: github
+    tools:
+      - getPullRequest
+      - getFiles
+      - createReview
+      - createComment
+      - addLabel
+---
+```
+
+**Feature Lead**:
+```yaml
+---
+name: feature-lead
+tools:
+  - read
+  - search
+  - github/*
+mcp-servers:
+  - name: github
+    tools:
+      - getPullRequest
+      - getComments
+      - createReview
+      - mergePullRequest
+      - addLabel
+---
+```
+
+### GitHub MCP Tool Reference
+
+| Tool | Purpose | Agents Using |
+|------|---------|--------------|
+| `createPullRequest` | Create new PR | Fullstack Engineer |
+| `getPullRequest` | Read PR details, reviews, status | All review agents |
+| `getFiles` | Get changed files in PR | Code Quality Auditor |
+| `getCommits` | Get commit history | TDD Specialist |
+| `getComments` | Read PR discussion | Feature Lead, Retro Specialist |
+| `createReview` | Submit APPROVE/REQUEST_CHANGES | TDD, Quality, Feature Lead |
+| `createComment` | Post comment on PR | All agents |
+| `addLabel` | Apply status labels | All review agents |
+| `removeLabel` | Remove labels | All agents |
+| `uploadFile` | Attach evidence files | Fullstack Engineer |
+| `mergePullRequest` | Merge to main branch | Feature Lead only |
+
+### Fallback to GitHub CLI
+
+If GitHub MCP unavailable, agents use CLI commands:
+
+```typescript
+// Agent fallback logic
+async function createPR(prData) {
+  try {
+    // Try MCP first
+    return await mcp.github.createPullRequest(prData);
+  } catch (error) {
+    if (error.code === 'MCP_UNAVAILABLE') {
+      // Fallback to CLI
+      return await exec(`gh pr create \\
+        --title "${prData.title}" \\
+        --body "${prData.body}" \\
+        --base ${prData.base} \\
+        --head ${prData.head}`);
+    }
+    throw error;
+  }
+}
+```
+
+### Human Oversight Dashboard
+
+**GitHub UI** serves as primary oversight interface:
+
+1. **PR List**: Monitor all open PRs and their status
+2. **PR Detail**: View agent reviews, labels, CI status
+3. **Actions Tab**: Monitor CI pipeline runs
+4. **Checks Tab**: See all quality gates (CI + agent reviews)
+5. **Insights**: View merge velocity, review times
+
+**Human interventions**:
+- Comment on PR to provide guidance to agents
+- Override agent approval if business/security concern
+- Manually run workflows if CI stuck
+- Close PRs if requirements change
+
 ---
 
 **Last Updated**: 2025-12-25  
-**Version**: 2.1 - US-001 Retrospective Updates
+**Version**: 2.2 - GitHub MCP Integration for Autonomous PR Workflow
 
 **Changelog**:
 - Added DevOps Specialist (v1.0.0) for CI/CD automation
