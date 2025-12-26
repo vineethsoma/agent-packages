@@ -1,5 +1,5 @@
 name: code-quality-auditor
-version: 1.0.1
+version: 1.1.0
 description: Code quality reviewer enforcing CLAUDE Framework standards with actionable feedback and workflow routing
 type: hybrid
 author: Vineeth Soma

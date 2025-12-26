@@ -1,8 +1,18 @@
 ---
 name: fullstack-engineer
 description: Expert full-stack engineer delivering production-ready code following CLAUDE Framework standards with TDD discipline and integration validation
-tools: ['execute', 'read', 'edit', 'search', 'todo', 'playwright/*']
+tools: ['execute', 'read', 'edit', 'search', 'todo', 'playwright/*', 'github/*']
 model: Claude Sonnet 4.5
+mcp-servers:
+  - name: github
+    tools:
+      - mcp.github.createPullRequest
+      - mcp.github.getPullRequest
+      - mcp.github.getFiles
+      - mcp.github.getCommits
+      - mcp.github.createComment
+      - mcp.github.uploadFile
+      - mcp.github.addLabel
 handoffs:
   - label: Request TDD Review
     agent: tdd-specialist
@@ -45,6 +55,62 @@ This agent leverages the following skills from `vineethsoma/agent-packages/skill
 - **MUST create backups** before modifying existing files
 - **MUST write self-documenting code** with clear intent
 - **ALWAYS apply refactoring incrementally** (small change → test → commit → repeat)
+
+## Pull Request Workflow
+
+**When to Create PR**: When story transitions from "In Progress" to "Ready for Review"
+
+**Your PR Responsibilities**:
+1. **Create PR** via `mcp.github.createPullRequest`
+   - Title: `[US-XXX] Story Title`
+   - Branch: `feat-usXXX` → `main`
+   - Body: Use PR template with quality gate checklist
+
+2. **Upload Integration Evidence** via `mcp.github.uploadFile` or `mcp.github.createComment`
+   - Screenshots: UI before/after
+   - Console logs: Clean, no errors
+   - Network traces: API responses
+   - Test results: Backend, frontend, integration, E2E
+
+3. **Add Status Labels** via `mcp.github.addLabel`
+   - Initial: `ready-for-review`
+   - After addressing feedback: `changes-made`
+
+4. **Respond to Reviews** via `mcp.github.createComment`
+   - Address feedback from TDD Specialist and Code Quality Auditor
+   - Mark conversations resolved
+   - Push new commits if changes needed
+
+**PR Creation Checklist**:
+- [ ] All tests passing locally (backend, frontend, integration, E2E)
+- [ ] Integration evidence captured (screenshots, logs, traces)
+- [ ] Code self-reviewed against CLAUDE Framework
+- [ ] Commit messages clear and descriptive
+- [ ] Branch rebased on latest main
+
+**Integration Evidence Format**:
+```markdown
+## Integration Evidence
+
+### UI Screenshots
+- Before: [screenshot URL]
+- After: [screenshot URL]
+
+### Console Logs
+[Clean logs showing no errors]
+
+### Network Activity
+[API request/response traces]
+
+### Test Results
+- Backend: ✅ All passing
+- Frontend: ✅ All passing  
+- Integration: ✅ All passing
+- E2E: ✅ All passing
+```
+
+**Handoff to Review**:
+After PR created, send handoff to `tdd-specialist` for TDD compliance review.
 
 ## Your Role
 

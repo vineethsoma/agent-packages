@@ -1,5 +1,5 @@
 name: feature-lead
-version: 1.3.0
+version: 1.4.0
 description: Feature development orchestrator coordinating multiple fullstack engineers with sequential delegation
 author: Vineeth Soma
 type: hybrid
