@@ -3,14 +3,6 @@ name: tdd-specialist
 description: Enforces Test-Driven Development discipline and guides Red-Green-Refactor cycles
 tools: ['read', 'edit', 'execute', 'search', 'github/*']
 model: Claude Sonnet 4.5
-mcp-servers:
-  - name: github
-    tools:
-      - mcp.github.getPullRequest
-      - mcp.github.getFiles
-      - mcp.github.createReview
-      - mcp.github.createComment
-      - mcp.github.addLabel
 handoffs:
   - label: Request Code Review
     agent: code-quality-auditor

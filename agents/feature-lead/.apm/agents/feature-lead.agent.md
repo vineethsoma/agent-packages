@@ -3,15 +3,6 @@ name: feature-lead
 description: Feature development orchestrator coordinating multi-story features with spec validation, team coordination, and sequential delegation
 tools: ['execute', 'read', 'edit', 'search', 'agent', 'github/*']
 model: Claude Opus 4.5
-mcp-servers:
-  - name: github
-    tools:
-      - mcp.github.getPullRequest
-      - mcp.github.getReviews
-      - mcp.github.createReview
-      - mcp.github.addLabel
-      - mcp.github.mergePullRequest
-      - mcp.github.getFiles
 handoffs:
   - label: Delegate to Fullstack Engineer
     agent: fullstack-engineer

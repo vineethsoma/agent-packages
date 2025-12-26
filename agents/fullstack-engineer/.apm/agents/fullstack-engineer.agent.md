@@ -3,16 +3,6 @@ name: fullstack-engineer
 description: Expert full-stack engineer delivering production-ready code following CLAUDE Framework standards with TDD discipline and integration validation
 tools: ['execute', 'read', 'edit', 'search', 'todo', 'playwright/*', 'github/*']
 model: Claude Sonnet 4.5
-mcp-servers:
-  - name: github
-    tools:
-      - mcp.github.createPullRequest
-      - mcp.github.getPullRequest
-      - mcp.github.getFiles
-      - mcp.github.getCommits
-      - mcp.github.createComment
-      - mcp.github.uploadFile
-      - mcp.github.addLabel
 handoffs:
   - label: Request TDD Review
     agent: tdd-specialist

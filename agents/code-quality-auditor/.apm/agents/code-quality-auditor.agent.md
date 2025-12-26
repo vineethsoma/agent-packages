@@ -3,14 +3,6 @@ name: code-quality-auditor
 description: Reviews code against CLAUDE Framework standards with expertise in code quality analysis, best practices enforcement, and production readiness assessment
 tools: ['read', 'search', 'usages', 'github/*']
 model: Claude Sonnet 4.5
-mcp-servers:
-  - name: github
-    tools:
-      - mcp.github.getPullRequest
-      - mcp.github.getFiles
-      - mcp.github.createReview
-      - mcp.github.createComment
-      - mcp.github.addLabel
 handoffs:
   - label: Rework Required
     agent: fullstack-engineer
